@@ -13,25 +13,22 @@ class RegistrationSerializer(serializers.ModelSerializer):
             'password': {'write_only': True},
         }
 
-    def save(self, **kwargs):
-        validated_data = self.validated_data
-        pw = self.validated_data['password']
-        repeat_pw = self.validated_data['repeated_password']
-        
-        if pw != repeat_pw:
-            raise serializers.ValidationError("Passwords do not match.")
-        if User.objects.filter(username=validated_data['username']).exists():
-            raise serializers.ValidationError("Username already exists.")
-        if User.objects.filter(email=validated_data['email']).exists():
-            raise serializers.ValidationError("Email already exists.")
-        
-        account = User(
-            username=validated_data['fullname'],
-            email=validated_data['email']
+    def validate(self, data):
+        if data['password'] != data['repeated_password']:
+            raise serializers.ValidationError("Passwörter stimmen nicht überein.")
+        if CustomUser.objects.filter(email=data['email']).exists():
+            raise serializers.ValidationError("Diese E-Mail wird bereits verwendet.")
+        return data
+
+    def create(self, validated_data):
+        validated_data.pop('repeated_password')
+        user = CustomUser(
+            username=validated_data['email'],  # wichtig für Login via E-Mail
+            email=validated_data['email'],
+            fullname=validated_data['fullname']
         )
-        
-        account.set_password(pw) 
-        account.save()
-        return account
+        user.set_password(validated_data['password'])
+        user.save()
+        return user
 
 
