@@ -1,13 +1,12 @@
-from rest_framework import generics, status, permissions, response
-from auth_app.models import UserProfile
-from .serializers import UserProfileSerializer, RegistrationSerializer
+from rest_framework import status, permissions
+from .serializers import RegistrationSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 
 class RegistrationView(APIView):
-    permission_classes = [permissions.AllowAny] # Allow any user to access this view 
+    permission_classes = [permissions.AllowAny] 
 
     def post(self, request, *args, **kwargs):
         try:
@@ -27,9 +26,7 @@ class RegistrationView(APIView):
                     'user_id': saved_account.id,
                 }
                 return Response(
-                    data, 
-                    {'detail': 'Der Benutzer wurde erfolgreich erstellt.'},
-                    status=status.HTTP_201_CREATED)
+                    data, status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response(
                 {'detail': 'Interner Serverfehler.'},
