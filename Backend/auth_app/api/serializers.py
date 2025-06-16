@@ -23,7 +23,6 @@ class RegistrationSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data.pop('repeated_password')
         user = CustomUser(
-            username=validated_data['email'],  # wichtig für Login via E-Mail
             email=validated_data['email'],
             fullname=validated_data['fullname']
         )
